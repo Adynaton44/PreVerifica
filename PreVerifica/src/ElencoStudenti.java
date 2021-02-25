@@ -1,9 +1,13 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -50,6 +54,7 @@ public class ElencoStudenti extends ArrayList<Studente>{
 					String[] s=line.split(", ");
 					this.add(new Studente(s[0],s[1],s[2],s[3]));
 				}
+				JOptionPane.showMessageDialog(f, "Serializzazione effettuata");
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -59,7 +64,60 @@ public class ElencoStudenti extends ArrayList<Studente>{
 		}
 	}
 	
-	public void salvaserial() {
-		
+	public void salvaserial(Finestra finestra) {
+		FileOutputStream f=null;
+		ObjectOutputStream o=null;
+		JFileChooser chooser=new JFileChooser();
+		chooser.setFileFilter(new CsvFileFilter());
+		int n=chooser.showSaveDialog(finestra);
+		if(n==JFileChooser.APPROVE_OPTION) {
+			File file=chooser.getSelectedFile();
+			try {
+				f=new FileOutputStream(file);
+				o=new ObjectOutputStream(f);
+				o.writeObject(this);
+				o.flush();
+				o.close();
+				
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void deserializza(Finestra finestra) {
+		FileInputStream f=null;
+		ObjectInputStream o=null;
+		JFileChooser chooser=new JFileChooser();
+		chooser.setFileFilter(new CsvFileFilter());
+		int n=chooser.showSaveDialog(finestra);
+		if(n==JFileChooser.APPROVE_OPTION) {
+			File file=chooser.getSelectedFile();
+			try {
+				f=new FileInputStream(file);
+				o=new ObjectInputStream(f);
+				ElencoStudenti es=(ElencoStudenti)o.readObject();
+				o.close();
+				for(int i=0;i<es.size();i++) {
+					this.add(es.get(i));
+				}
+				JOptionPane.showMessageDialog(finestra, "Deserializzazione effettuata");
+				
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }
+
+
