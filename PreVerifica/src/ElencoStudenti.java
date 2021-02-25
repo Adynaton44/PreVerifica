@@ -1,4 +1,65 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
-public class ElencoStudenti {
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
+public class ElencoStudenti extends ArrayList<Studente>{
+	
+	public ElencoStudenti() {}
+	public Studente s;
+	
+	public void salvasucsv(Finestra f) {
+		JFileChooser chooser=new JFileChooser();
+		chooser.setFileFilter(new CsvFileFilter());
+		int n=chooser.showSaveDialog(f);
+		if(JFileChooser.APPROVE_OPTION==n) {
+			File file=chooser.getSelectedFile();
+			FileWriter fw;
+			try {
+				fw = new FileWriter(file);
+				for(int i=0;i<this.size();i++) {
+					fw.write(this.get(i).nome+", "+this.get(i).cognome+", "+this.get(i).classe+", "+this.get(i).path+",\n");
+				}
+				fw.flush();
+				fw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		JOptionPane.showMessageDialog(f, "Salvataggio avvenuto con successo");
+	}
+
+	
+	public void importadacsv(Finestra f) {
+		JFileChooser chooser=new JFileChooser();
+		chooser.setFileFilter(new CsvFileFilter());
+		int n=chooser.showOpenDialog(f);
+		if(JFileChooser.APPROVE_OPTION==n) {
+			File file=chooser.getSelectedFile();
+			BufferedReader br;
+			try {
+				br = new BufferedReader(new FileReader(file));
+				String line="";
+				while((line=br.readLine())!=null) {
+					String[] s=line.split(", ");
+					this.add(new Studente(s[0],s[1],s[2],s[3]));
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			JOptionPane.showMessageDialog(f,"Importazione avvenuta con successo");
+		}
+	}
+	
+	public void salvaserial() {
+		
+	}
 }
